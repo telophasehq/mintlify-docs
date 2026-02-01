@@ -1,0 +1,286 @@
+---
+title: "SSO"
+description: "Set up single sign-on for your team"
+icon: "key"
+---
+
+Configure single sign-on (SSO) to allow your team to access Hiro using your existing identity provider.
+
+## Quick Reference
+
+| What you need | Where to find it |
+|---------------|------------------|
+| ACS URL (Callback URL) | [Settings > Security](https://app.hiro.is/settings/security) > Configure SSO |
+| Entity ID (SP Entity ID) | [Settings > Security](https://app.hiro.is/settings/security) > Configure SSO |
+| SCIM Endpoint URL | [Settings > Security](https://app.hiro.is/settings/security) > SCIM Provisioning |
+| SCIM Bearer Token | [Settings > Security](https://app.hiro.is/settings/security) > SCIM Provisioning |
+
+## Supported Identity Providers
+
+Hiro supports SAML 2.0 SSO with:
+
+| Provider | Status |
+|----------|--------|
+| **Okta** | Supported |
+| **Azure AD / Entra ID** | Supported |
+| **Google Workspace** | Supported |
+
+## Before You Begin
+
+You'll need:
+
+- **Admin access** to your identity provider
+- **Admin role** in Hiro
+
+<Warning>
+**IdP-initiated authentication is not supported.** Users must start their login from Hiro, not from your identity provider's app portal.
+</Warning>
+
+## Okta SSO
+
+<Steps>
+  <Step title="Get your SP details from Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Copy the **ACS URL** and **Entity ID** — you'll need these in the next step
+  </Step>
+  <Step title="Create a SAML application in Okta">
+    In your Okta Admin Console:
+    1. Go to **Applications > Applications**
+    2. Click **Create App Integration**
+    3. Select **SAML 2.0**
+    4. Click **Next**
+    5. Enter app name: `Hiro`
+  </Step>
+  <Step title="Configure SAML settings">
+    Enter the following settings from Hiro's SSO configuration page:
+
+    | Setting | Value |
+    |---------|-------|
+    | Single sign-on URL | Paste the **ACS URL** from Hiro |
+    | Audience URI (SP Entity ID) | Paste the **Entity ID** from Hiro |
+    | Name ID format | EmailAddress |
+    | Application username | Email |
+    | Update application username on | Create and update |
+  </Step>
+  <Step title="Get the Metadata URL">
+    After creating the app:
+    1. Go to the **Sign On** tab
+    2. Find the **Metadata URL** (under "SAML Signing Certificates" or "Metadata details")
+    3. Copy this URL — it typically ends in `/sso/saml/metadata`
+  </Step>
+  <Step title="Configure Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Select **Okta**
+    3. Paste the **Metadata URL**
+    4. Click **Save**
+    5. Click **Enable** to activate SSO
+  </Step>
+  <Step title="Assign users in Okta">
+    In Okta, go to the Hiro application and assign users or groups who should have access.
+  </Step>
+</Steps>
+
+## Okta SCIM
+
+Enable SCIM for automated user provisioning. This allows Okta to automatically create users when they're assigned to Hiro, deactivate users when they're unassigned, and sync user attributes.
+
+<Info>
+SCIM provisioning is only available after you've configured Okta SSO.
+</Info>
+
+<Steps>
+  <Step title="Generate SCIM credentials in Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Find the **SCIM Provisioning** section
+    2. Click **Generate Token**
+    3. Copy the **SCIM Base URL** and **Bearer Token**
+
+    <Warning>
+    Copy the Bearer Token now — it won't be shown again. You can regenerate it if needed, but this will break existing SCIM connections.
+    </Warning>
+  </Step>
+  <Step title="Enable SCIM in your Okta app">
+    In your Okta Admin Console:
+    1. Go to your Hiro app → **General** tab → **App Settings**
+    2. Click **Edit**
+    3. Set **Provisioning** to **SCIM**
+    4. Click **Save**
+  </Step>
+  <Step title="Configure API integration">
+    1. Go to the **Provisioning** tab → **Integration**
+    2. Click **Configure API Integration**
+    3. Check **Enable API integration**
+    4. Paste the **SCIM Base URL** from Hiro
+    5. Set **Unique identifier field** to `userName`
+    6. Set **Authentication Mode** to **HTTP Header**
+    7. Paste the **Bearer Token** from Hiro
+    8. Click **Test API Credentials**, then **Save**
+  </Step>
+  <Step title="Enable provisioning actions">
+    1. Go to **Provisioning** tab → **To App**
+    2. Click **Edit**
+    3. Enable:
+       - **Create Users**
+       - **Update User Attributes**
+       - **Deactivate Users**
+    4. Click **Save**
+  </Step>
+  <Step title="Assign users">
+    Go to the **Assignments** tab and assign users or groups. Okta will automatically provision them in Hiro.
+  </Step>
+</Steps>
+
+For more details, see [Okta's SCIM documentation](https://help.okta.com/en-us/content/topics/apps/apps_app_integration_wizard_scim.htm).
+
+## Azure AD / Entra ID SSO
+
+<Steps>
+  <Step title="Get your SP details from Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Copy the **ACS URL** and **Entity ID** — you'll need these in the next step
+  </Step>
+  <Step title="Create an enterprise application">
+    In the Azure Portal:
+    1. Go to **Microsoft Entra ID > Enterprise applications**
+    2. Click **New application**
+    3. Click **Create your own application**
+    4. Enter name: `Hiro`
+    5. Select **Integrate any other application you don't find in the gallery**
+    6. Click **Create**
+  </Step>
+  <Step title="Configure SAML">
+    1. Go to **Single sign-on** in the left menu
+    2. Select **SAML**
+    3. Click **Edit** on **Basic SAML Configuration**
+    4. Enter values from Hiro's SSO configuration page:
+       - **Identifier (Entity ID)**: Paste the Entity ID from Hiro
+       - **Reply URL (ACS URL)**: Paste the ACS URL from Hiro
+    5. Click **Save**
+  </Step>
+  <Step title="Configure attributes">
+    Click **Edit** on **Attributes & Claims**:
+    1. Ensure the **Unique User Identifier** uses `user.mail`
+    2. Verify email claim is present
+  </Step>
+  <Step title="Get the Metadata URL">
+    In the **SAML Certificates** section:
+    1. Find **App Federation Metadata Url**
+    2. Copy this URL
+  </Step>
+  <Step title="Configure Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Select **Azure AD**
+    3. Paste the **Metadata URL**
+    4. Click **Save**
+    5. Click **Enable** to activate SSO
+  </Step>
+  <Step title="Assign users">
+    In Azure AD, go to **Users and groups** and assign users or groups to the application.
+  </Step>
+</Steps>
+
+## Google Workspace SSO
+
+<Steps>
+  <Step title="Get your SP details from Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Copy the **ACS URL** and **Entity ID** — you'll need these in a later step
+  </Step>
+  <Step title="Create a SAML app">
+    In Google Admin Console:
+    1. Go to **Apps > Web and mobile apps**
+    2. Click **Add app > Add custom SAML app**
+    3. Enter name: `Hiro`
+    4. Click **Continue**
+  </Step>
+  <Step title="Copy IdP information">
+    On the Google Identity Provider details page:
+    1. Copy the **SSO URL** — save this for the metadata URL
+    2. Click **Continue**
+  </Step>
+  <Step title="Configure service provider details">
+    Enter values from Hiro's SSO configuration page:
+    - **ACS URL**: Paste the ACS URL from Hiro
+    - **Entity ID**: Paste the Entity ID from Hiro
+    - **Name ID format**: EMAIL
+    - **Name ID**: Basic Information > Primary email
+
+    Click **Continue**
+  </Step>
+  <Step title="Configure attribute mapping">
+    Add attribute mappings:
+    | Google Directory | App attribute |
+    |-----------------|---------------|
+    | Primary email | email |
+    | First name | firstName |
+    | Last name | lastName |
+
+    Click **Finish**
+  </Step>
+  <Step title="Enable the app">
+    Click on the Hiro app and set **User access** to **ON for everyone** or select specific organizational units.
+  </Step>
+  <Step title="Configure Hiro">
+    In Hiro, go to [**Settings > Security**](https://app.hiro.is/settings/security):
+    1. Click **Configure SSO**
+    2. Select **Google Workspace**
+    3. Enter the **SSO URL** you copied (append `/metadata` if needed)
+    4. Click **Save**
+    5. Click **Enable** to activate SSO
+  </Step>
+</Steps>
+
+## SSO Settings
+
+After configuring SSO, you can adjust these settings in [**Settings > Security**](https://app.hiro.is/settings/security):
+
+### Enable/Disable SSO
+
+Toggle SSO on or off without deleting the configuration.
+
+### Enforce SSO
+
+When enabled, all users in your organization must sign in via SSO. Password login is disabled.
+
+<Warning>
+Before enforcing SSO, ensure at least one admin has successfully logged in via SSO. Otherwise, you may lock yourself out.
+</Warning>
+
+## Troubleshooting
+
+### "SAML Response Invalid"
+
+- Verify the ACS URL in your IdP exactly matches the value from Hiro
+- Check that the Entity ID matches exactly
+- Ensure the Name ID is set to email format
+
+### "User Not Found"
+
+- Verify the user is assigned to the Hiro application in your IdP
+- Check that email attribute mapping is correct
+
+### SSO not working after configuration
+
+- Ensure you clicked **Enable** after saving the configuration
+- Verify the Metadata URL is accessible (try opening it in a browser)
+- Check that the IdP app is enabled and users are assigned
+
+### Locked Out
+
+If you've enforced SSO and can't log in, contact support@hiro.is with your organization name.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Connect Integrations" icon="plug" href="/onboarding/connect-integrations">
+    Link your security tools to Hiro.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Run your first investigation.
+  </Card>
+</CardGroup>

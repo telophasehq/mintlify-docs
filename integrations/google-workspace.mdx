@@ -1,0 +1,167 @@
+---
+title: "Google Workspace"
+description: "Connect Google Workspace for visibility into your productivity suite"
+icon: "google"
+---
+
+The Google Workspace integration provides read-only visibility into users, groups, devices, and security events.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **Analyze user security** | Security posture analysis: 2FA coverage, admin accounts, recent users |
+| **List users** | List users with status, admin flags, 2FA enrollment |
+| **Get user details** | Detailed user info: status, 2FA, recovery info, aliases, last login |
+| **List groups** | List all groups with member counts |
+| **Get group members** | View members by role (owner, manager, member) |
+| **Get login failures** | Recent failed login attempts grouped by user and IP |
+| **List third-party apps** | OAuth apps connected to user accounts with permission analysis |
+| **List org units** | Organizational unit hierarchy |
+
+### What Hiro Cannot Do
+
+<Warning>
+Google Workspace integration is **read-only**. Hiro cannot take any actions.
+</Warning>
+
+- Cannot suspend or disable users
+- Cannot wipe devices
+- Cannot reset passwords
+- Cannot revoke OAuth tokens
+- Cannot modify group membership
+- Cannot change any settings
+
+All remediation must be done manually in the Google Workspace Admin Console.
+
+## Setup
+
+### Prerequisites
+
+- Google Workspace admin access
+- Business, Enterprise, or Education plan
+
+### Connection Method
+
+Hiro connects via **OAuth 2.0** with admin consent.
+
+<Steps>
+  <Step title="Start connection">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations) and click **Connect**.
+  </Step>
+  <Step title="Sign in with admin account">
+    You'll be redirected to Google. Sign in with a Google Workspace admin account.
+  </Step>
+  <Step title="Grant permissions">
+    Review and approve the requested permissions. All scopes are read-only:
+    - Directory API (users, groups, org units, devices)
+    - Reports API (login activity, admin activity, token activity)
+  </Step>
+  <Step title="Verify admin access">
+    Hiro verifies your admin access by attempting to list users. If this fails, the connection will show a warning.
+  </Step>
+</Steps>
+
+## Investigation Examples
+
+### Security posture analysis
+
+```
+Analyze our Google Workspace security posture
+```
+
+Returns:
+- Total users (active, suspended, archived)
+- Users without 2FA enabled
+- Admin users and their 2FA status
+- Recently created users (last 30 days)
+- Security findings with severity levels
+
+### Check a specific user
+
+```
+Get details for john@company.com in Google Workspace
+```
+
+Returns:
+- Account status
+- 2FA enrollment
+- Last login time
+- Admin privileges
+- Email aliases
+- Recovery information
+
+### Find login failures
+
+```
+Show me failed login attempts in Google Workspace
+```
+
+Returns:
+- Failed attempts grouped by user
+- IP addresses used
+- Recommendations for accounts with many failures
+
+### Audit third-party apps
+
+```
+What third-party apps are connected to our Google Workspace?
+```
+
+Returns:
+- Apps categorized by risk level:
+  - **High risk**: Full email or Drive access
+  - **Medium risk**: Calendar or contacts access
+  - **Low risk**: Limited permissions
+- Scopes/permissions for each app
+- Number of users with each app
+
+## Security Analysis
+
+Hiro's security analysis highlights:
+
+| Finding | Severity |
+|---------|----------|
+| Admin without 2FA | Critical |
+| Many users without 2FA | High |
+| Recently created admin accounts | High |
+| High-risk third-party apps | Medium |
+
+## Limitations
+
+Since the integration is read-only:
+
+1. **For user issues** — Suspend users manually in Admin Console, or use Okta if users are provisioned through Okta
+2. **For device issues** — Wipe devices manually in Admin Console
+3. **For app issues** — Revoke OAuth tokens manually in Admin Console
+
+<Tip>
+If you need to take action on Google Workspace users, consider provisioning users through Okta. Hiro can then suspend users via the Okta integration.
+</Tip>
+
+## Troubleshooting
+
+### "Admin access not verified"
+
+The account used to connect may not have sufficient admin privileges. Reconnect with a Super Admin account.
+
+### Slow queries
+
+Google Workspace APIs can be slow for large domains. Queries may take several seconds.
+
+### Missing data
+
+Some report data requires specific Google Workspace editions. Check your license level.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management for user actions.
+  </Card>
+  <Card title="Slack" icon="slack" href="/integrations/slack">
+    Connect team communication.
+  </Card>
+</CardGroup>

@@ -1,0 +1,146 @@
+---
+title: "Integrations Overview"
+description: "Connect your security stack to Hiro"
+icon: "plug"
+---
+
+Hiro's power comes from deep integrations with your security tools. Each integration provides query capabilities for investigations and, where supported, action capabilities for response.
+
+## Quick Setup Reference
+
+| Integration | Connection Method | Connect |
+|-------------|-------------------|---------|
+| Okta | OAuth 2.0 + Private Key JWT | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| AWS | IAM AssumeRole | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| CrowdStrike | API Client credentials | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| Datadog | API Key + Application Key | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| GitHub | GitHub App installation | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| Google Workspace | OAuth 2.0 (read-only) | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| Slack | OAuth 2.0 | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+
+## Supported Integrations
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    **Full read/write access**
+
+    Query users, groups, apps, policies, and logs. Suspend users, clear sessions, manage groups.
+  </Card>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    **Full read/write access**
+
+    Search CloudTrail, analyze IAM roles. Terminate instances, disable users, block IPs in WAF.
+  </Card>
+  <Card title="CrowdStrike" icon="shield" href="/integrations/crowdstrike">
+    **Full read/write access**
+
+    Query detections, ingest alerts. Contain hosts, update alert status.
+  </Card>
+  <Card title="Datadog" icon="dog" href="/integrations/datadog">
+    **Read-only**
+
+    Search logs by user, IP, hostname, or custom query. Correlate with other integrations.
+  </Card>
+  <Card title="GitHub" icon="code" href="/integrations/github">
+    **Mostly read-only**
+
+    Check branch protection, query audit logs. Can enable basic branch protection.
+  </Card>
+  <Card title="Google Workspace" icon="google" href="/integrations/google-workspace">
+    **Read-only**
+
+    Query users, groups, devices, login activity, third-party apps. No actions available.
+  </Card>
+  <Card title="Slack" icon="slack" href="/integrations/slack">
+    **Alerts and bot**
+
+    Send alerts to channels, respond to @mentions. Reset sessions (Enterprise Grid only).
+  </Card>
+</CardGroup>
+
+## Integration Capabilities
+
+| Integration | Query | Actions | Notes |
+|-------------|-------|---------|-------|
+| **Okta** | Users, groups, apps, logs, policies | Suspend, clear sessions, manage users/groups/apps | Requires admin role + OAuth scopes |
+| **AWS** | CloudTrail, IAM analysis | Terminate EC2, delete IAM users/keys, WAF blocking | Uses IAM AssumeRole |
+| **CrowdStrike** | Detections, host info | Contain/uncontain hosts, update alerts | Auto-ingests detections |
+| **Datadog** | Log search, correlation | None (read-only) | Supports all Datadog sites |
+| **GitHub** | Branch protection, audit logs | Enable branch protection only | Audit logs require Enterprise Cloud |
+| **Google Workspace** | Users, groups, devices, reports | None (read-only) | All scopes are read-only |
+| **Slack** | User info | Reset sessions (Enterprise only), send alerts | Primarily for alerts and bot |
+
+## Connecting Integrations
+
+All integrations are managed from [**Settings > Integrations**](https://app.hiro.is/settings/integrations).
+
+<Steps>
+  <Step title="Navigate to Settings">
+    Click **Settings** in the left sidebar, then select **Integrations**.
+  </Step>
+  <Step title="Select an integration">
+    Find the integration you want to connect and click **Connect**.
+  </Step>
+  <Step title="Authorize access">
+    Follow the specific setup flow for that integration (OAuth, API credentials, etc.).
+  </Step>
+  <Step title="Verify connection">
+    Hiro will test the connection and show a success message.
+  </Step>
+</Steps>
+
+## Recommended Order
+
+For the best experience, connect integrations in this order:
+
+<Steps>
+  <Step title="Okta (or Google Workspace)">
+    **Identity first.** Most investigations involve users, so start with your identity provider.
+  </Step>
+  <Step title="AWS">
+    **Cloud infrastructure.** CloudTrail provides rich API logs that Hiro correlates with identity data.
+  </Step>
+  <Step title="CrowdStrike">
+    **Endpoint detection.** Hiro automatically ingests detections and correlates with identity and cloud.
+  </Step>
+  <Step title="GitHub">
+    **Source code security.** Analyze branch protection and audit repository access.
+  </Step>
+  <Step title="Slack">
+    **Alerts and bot.** Receive security alerts and interact with Hiro from Slack.
+  </Step>
+</Steps>
+
+## Managing Integrations
+
+### View Status
+
+Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations) to see all connected integrations and their status:
+
+| Status | Meaning |
+|--------|---------|
+| **Connected** | Working normally |
+| **Error** | Connection issue—click for details |
+| **Expired** | Credentials need refresh |
+
+### Disconnect
+
+To remove an integration:
+1. Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations)
+2. Click on the integration
+3. Click **Disconnect**
+
+<Warning>
+Disconnecting an integration immediately revokes Hiro's access. Active investigations using that integration will show errors.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Connect cloud infrastructure.
+  </Card>
+</CardGroup>

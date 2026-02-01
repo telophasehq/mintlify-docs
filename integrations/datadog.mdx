@@ -1,0 +1,145 @@
+---
+title: "Datadog"
+description: "Connect Datadog for log analysis and security monitoring"
+icon: "dog"
+---
+
+The Datadog integration provides log search and analysis capabilities, allowing Hiro to investigate security events across your application and infrastructure logs.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **Query logs** | Search logs by username, IP address, hostname, or custom query |
+| **Correlate activity** | Cross-reference Datadog logs with other integrations |
+
+### What You Can Search
+
+Hiro can query Datadog logs with flexible filtering:
+
+- **Usernames** — Filter by `@usr.name` field
+- **IP addresses** — Filter by `@network.client.ip` field
+- **Hostnames** — Filter by `host` field
+- **Custom queries** — Full Datadog query syntax support
+
+**Example queries:**
+
+```
+status:error AND service:auth-service
+@http.status_code:>=400
+host:web-* AND env:production
+@usr.name:john.doe
+```
+
+### Action Tools
+
+The Datadog integration is **read-only**. Hiro can query and analyze logs but cannot modify Datadog configuration, create monitors, or trigger alerts.
+
+<Info>
+Remediation actions based on Datadog findings are executed through other integrations (Okta, AWS, CrowdStrike, etc.).
+</Info>
+
+## Setup
+
+### Prerequisites
+
+- Datadog account with log retention enabled
+- Ability to create API and Application keys
+
+### Connection Steps
+
+<Steps>
+  <Step title="Create an API key">
+    In Datadog:
+    1. Go to **Organization Settings > API Keys**
+    2. Click **New Key**
+    3. Name it (e.g., "Hiro Security")
+    4. Copy the API key
+  </Step>
+  <Step title="Create an Application key">
+    1. Go to **Organization Settings > Application Keys**
+    2. Click **New Key**
+    3. Name it (e.g., "Hiro Security")
+    4. Copy the Application key
+  </Step>
+  <Step title="Connect in Hiro">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
+    1. Click **Connect** next to Datadog
+    2. Enter your **API Key**
+    3. Enter your **Application Key**
+    4. Select your **Datadog site** (e.g., `datadoghq.com` for US1)
+    5. Click **Connect**
+  </Step>
+</Steps>
+
+### Datadog Sites
+
+Select the site that matches your Datadog account:
+
+| Site | URL |
+|------|-----|
+| US1 (default) | `datadoghq.com` |
+| US3 | `us3.datadoghq.com` |
+| US5 | `us5.datadoghq.com` |
+| EU | `datadoghq.eu` |
+| AP1 | `ap1.datadoghq.com` |
+| US1-FED | `ddog-gov.com` |
+
+## Investigation Examples
+
+### Search for errors
+
+```
+Show me error logs from the auth service in the last hour
+```
+
+### Investigate a user
+
+```
+Find all Datadog logs related to john@company.com
+```
+
+### Search by IP
+
+```
+Show me logs from IP 185.220.101.1 across all services
+```
+
+### Correlate across systems
+
+```
+Correlate this user's activity across Datadog, Okta, and AWS
+```
+
+Hiro queries all connected integrations and builds a unified timeline.
+
+## Troubleshooting
+
+### "Authentication failed"
+
+- Verify both the API Key and Application Key are correct
+- Check that the keys haven't been revoked in Datadog
+- Ensure you selected the correct Datadog site
+
+### "No logs found"
+
+- Verify log retention is enabled in your Datadog plan
+- Check that relevant log sources are configured and indexed
+- Try expanding the time range
+
+### Rate limiting
+
+Datadog has API rate limits. If you're hitting limits, try narrowing your search queries or reducing the time range.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Connect cloud infrastructure.
+  </Card>
+</CardGroup>

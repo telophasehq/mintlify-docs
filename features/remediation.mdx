@@ -1,0 +1,229 @@
+---
+title: "Remediation Actions"
+description: "Understand available security actions and the approval workflow"
+icon: "hammer"
+---
+
+Hiro can propose and execute remediation actions across your connected integrations. All high-impact actions require explicit approval, ensuring you maintain full control over your security response.
+
+## How Remediation Works
+
+When Hiro identifies a threat, it:
+
+1. **Analyzes the situation** — Correlates evidence from multiple sources
+2. **Determines appropriate actions** — Based on threat type and severity
+3. **Calculates confidence** — How certain it is the action is warranted
+4. **Proposes the action** — Presents it for your review
+5. **Awaits approval** — Executes only after you confirm
+6. **Logs the result** — Maintains a complete audit trail
+
+<Warning>
+Hiro will never execute a destructive action without explicit approval. You always see what will happen before it happens.
+</Warning>
+
+## Approval Levels
+
+Hiro uses a tiered approval system:
+
+### No Approval Required
+
+Read-only operations that don't modify state:
+
+- Querying logs and events
+- Listing users, groups, and resources
+- Reading configuration
+- Fetching audit trails
+
+### Approval Required
+
+Actions that modify state or could impact users require explicit approval before execution. Both Admin and Member roles can approve actions in Hiro.
+
+## Available Actions by Integration
+
+### Okta
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Clear user sessions | Force re-authentication | Standard |
+| Expire password | Require password reset | Standard |
+| Suspend user | Lock out of all SSO apps | Elevated |
+| Unsuspend user | Restore access | Elevated |
+| Deactivate user | Permanently remove access | Critical |
+| Reset MFA factors | Clear enrolled factors | Standard |
+
+**Example proposal:**
+
+```
+PROPOSED ACTION: Suspend Okta User
+─────────────────────────────────
+Target: john@company.com
+Reason: Account compromise detected
+Evidence:
+  • Login from Tor exit node (185.220.101.1)
+  • Session created from previously unseen device
+  • Unusual app access pattern (7 apps in 2 minutes)
+Confidence: High (88%)
+Impact: User will be locked out of all SSO applications
+
+[Approve]  [Reject]  [More Info]
+```
+
+### AWS
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Deactivate access key | Disable API access | Standard |
+| Delete access key | Remove API credentials | Elevated |
+| Detach admin policies | Remove AdministratorAccess, PowerUserAccess, IAMFullAccess | Elevated |
+| Terminate EC2 instance | Stop and remove instance | Critical |
+| Delete IAM user | Remove AWS identity | Critical |
+| Revoke IAM role sessions | Invalidate assumed roles | Elevated |
+| Quarantine security group | Isolate network access | Elevated |
+
+### CrowdStrike
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Contain host | Network-isolate endpoint | Elevated |
+| Lift containment | Restore network access | Elevated |
+| RTR session | Start remote response | Elevated |
+
+### GitHub
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Revoke user tokens | Invalidate access tokens | Standard |
+| Remove collaborator | Remove repo access | Elevated |
+| Disable user | Block organization access | Critical |
+
+### Google Workspace
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Sign out user | End all sessions | Standard |
+| Suspend user | Block Workspace access | Elevated |
+| Wipe device | Remote wipe managed device | Critical |
+
+### Slack
+
+| Action | Description | Approval Level |
+|--------|-------------|----------------|
+| Deactivate user | Remove Slack access | Elevated |
+| End sessions | Force re-authentication | Standard |
+
+## Confidence Scores
+
+Hiro provides confidence scores for proposed actions:
+
+| Score | Meaning | Recommendation |
+|-------|---------|----------------|
+| **High (80%+)** | Strong evidence supports action | Review briefly, approve if appropriate |
+| **Medium (50–80%)** | Reasonable evidence | Review carefully, consider alternatives |
+| **Low (below 50%)** | Limited evidence | Investigate further before approving |
+
+<Info>
+Confidence scores are based on the quantity and quality of evidence, consistency across sources, and historical patterns.
+</Info>
+
+## The Approval Interface
+
+When Hiro proposes an action, you'll see:
+
+### Action Details
+
+- **What**: The specific action to be taken
+- **Target**: The affected user, resource, or system
+- **Why**: Reason for the recommendation
+- **Evidence**: Supporting findings with timestamps
+- **Confidence**: How certain Hiro is
+- **Impact**: What will happen when executed
+
+### Available Responses
+
+| Response | Effect |
+|----------|--------|
+| **Approve** | Execute the action immediately |
+| **Reject** | Skip this action, continue investigation |
+| **More Info** | Ask Hiro for additional context |
+| **Defer** | Save for later review |
+
+## Manual Instructions
+
+When an integration doesn't support API-based remediation, Hiro provides manual instructions:
+
+```
+MANUAL ACTION REQUIRED
+─────────────────────
+Hiro cannot automatically suspend users in your Okta configuration.
+
+To suspend john@company.com manually:
+1. Log in to Okta Admin Console
+2. Navigate to Directory > People
+3. Search for "john@company.com"
+4. Click the user, then Actions > Suspend
+5. Confirm the suspension
+
+Once complete, mark this action as done in Hiro.
+
+[Mark as Complete]  [Need Help]
+```
+
+## Audit Trail
+
+Every action (proposed, approved, rejected, executed) is logged:
+
+```
+ACTION AUDIT LOG
+────────────────
+2024-01-15 14:32:15 | PROPOSED | Suspend Okta user john@company.com
+2024-01-15 14:32:45 | APPROVED | by admin@company.com
+2024-01-15 14:32:46 | EXECUTED | Okta API returned success
+2024-01-15 14:32:47 | VERIFIED | User status confirmed as SUSPENDED
+```
+
+Access the full audit trail in [**Settings > Audit Log**](https://app.hiro.is/settings/audit) or export from any Fight Mode session.
+
+## Rollback and Recovery
+
+Some actions support rollback:
+
+| Action | Rollback |
+|--------|----------|
+| Suspend Okta user | Unsuspend user |
+| Contain CrowdStrike host | Lift containment |
+| Deactivate AWS access key | Reactivate key |
+| Terminate EC2 instance | Not reversible |
+| Delete IAM user | Not reversible |
+
+<Warning>
+Destructive actions (delete, terminate) cannot be rolled back. Hiro will warn you before proposing irreversible actions.
+</Warning>
+
+## Best Practices
+
+### Review Evidence Before Approving
+
+Even with high confidence, take a moment to understand why Hiro is recommending an action.
+
+### Start with Reversible Actions
+
+When possible, prefer suspending over deleting, containing over terminating.
+
+### Document Your Decisions
+
+Use the notes feature to record why you approved or rejected an action.
+
+### Verify After Execution
+
+Hiro verifies actions automatically, but you can also confirm manually.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Fight Mode" icon="swords" href="/features/fight-mode">
+    Use remediation in continuous threat hunting.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations/overview">
+    Connect more systems for broader remediation coverage.
+  </Card>
+</CardGroup>

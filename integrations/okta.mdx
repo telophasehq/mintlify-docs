@@ -1,0 +1,174 @@
+---
+title: "Okta"
+description: "Connect Okta for identity and access management"
+icon: "key"
+---
+
+The Okta integration provides deep visibility into user authentication and enables rapid response to identity-based threats.
+
+## Capabilities
+
+### Query Tools
+
+Hiro can query Okta for:
+
+| Category | What You Can Query |
+|----------|-------------------|
+| **Users** | List users, get user details, profile attributes |
+| **Groups** | List groups, group members, group applications |
+| **Applications** | List apps, app details, app assignments |
+| **Policies** | Sign-on policies, password policies, MFA policies, policy rules |
+| **System Logs** | Authentication events, admin actions, security events |
+| **Investigation** | Suspicious activity, failed logins, logins from suspicious countries, user login history |
+
+### Action Tools
+
+With appropriate permissions, Hiro can:
+
+| Action | Description |
+|--------|-------------|
+| Suspend user | Prevent user from signing in |
+| Unsuspend user | Restore suspended user access |
+| Clear user sessions | Force immediate logout from all sessions |
+| Create/update/deactivate users | Full user lifecycle management |
+| Manage groups | Create, update, delete groups; add/remove members |
+| Manage applications | Create, update, activate, deactivate apps |
+| Manage policies | Create, update, activate, deactivate policies and rules |
+
+<Warning>
+All actions require explicit approval before execution.
+</Warning>
+
+## Setup
+
+### Prerequisites
+
+- Okta admin access (Super Admin or Organization Administrator)
+- Ability to create an OAuth 2.0 service app in Okta
+
+### Connection Method
+
+Hiro connects via **OAuth 2.0 with Private Key JWT authentication** (not API tokens).
+
+<Steps>
+  <Step title="Create a service app in Okta">
+    In your Okta Admin Console:
+    1. Go to **Applications > Applications**
+    2. Click **Create App Integration**
+    3. Select **API Services**
+    4. Name it (e.g., "Hiro Security")
+  </Step>
+  <Step title="Configure the app">
+    After creating:
+    1. Go to **General > Client Credentials**
+    2. Select **Public key / Private key** as the client authentication method
+    3. Click **Add key** and then **Generate new key**
+    4. Copy the public key in JWK format
+    5. **Important:** Also save the private key — you'll need it in the final step
+  </Step>
+  <Step title="Grant OAuth scopes">
+    Go to **Okta API Scopes** and grant:
+    - `okta.users.read`
+    - `okta.users.manage`
+    - `okta.groups.read`
+    - `okta.apps.read`
+    - `okta.logs.read`
+    - `okta.policies.read`
+  </Step>
+  <Step title="Assign admin role">
+    **Critical step** — Scopes alone are not enough.
+
+    Go to **Admin roles** and assign:
+    - **Read-Only Administrator** (for queries only), or
+    - **Organization Administrator** (for full mutation access)
+
+    Without an admin role, API calls succeed but return empty results.
+  </Step>
+  <Step title="Connect in Hiro">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
+    1. Enter your Okta domain (e.g., `company.okta.com`)
+    2. Enter the Client ID
+    3. Paste the private key (JWK format)
+    4. Click **Connect**
+  </Step>
+</Steps>
+
+## Investigation Examples
+
+### Find suspicious logins
+
+```
+Show me logins from suspicious countries in the last 24 hours
+```
+
+Hiro checks for logins from flagged countries including Russia, China, North Korea, Iran, Belarus, and others.
+
+### Investigate a user
+
+```
+Investigate john@company.com for suspicious activity
+```
+
+Hiro runs a comprehensive check including:
+- Recent login history with locations
+- Failed authentication attempts
+- MFA challenges and failures
+- Account lockouts
+- Privilege changes
+
+### Check MFA status
+
+```
+Which users don't have MFA enrolled?
+```
+
+### Query system logs
+
+```
+Show me admin actions in the last 48 hours
+```
+
+## Remediation Actions
+
+When Hiro identifies a threat, it can propose actions like:
+
+```
+PROPOSED ACTION: Suspend Okta User
+─────────────────────────────────
+User: john@company.com
+Reason: Login from known malicious IP after multiple failed attempts
+Evidence:
+  • 5 failed logins from 185.220.101.1 (Tor exit node)
+  • Successful login from same IP at 14:25
+  • Immediate access to 7 applications
+Confidence: High (91%)
+
+[Approve]  [Reject]
+```
+
+## Troubleshooting
+
+### "Empty results" from queries
+
+The service app likely doesn't have an admin role assigned. Go to **Admin roles** in the Okta app settings and assign Read-Only Administrator or higher.
+
+### "Authentication failed"
+
+- Verify the Client ID is correct
+- Ensure the private key matches the public key configured in Okta
+- Check that the service app is active
+
+### Token errors
+
+Hiro uses short-lived tokens that auto-refresh. If you see persistent token errors, try disconnecting and reconnecting the integration.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Connect cloud infrastructure.
+  </Card>
+  <Card title="CrowdStrike" icon="shield" href="/integrations/crowdstrike">
+    Connect endpoint protection.
+  </Card>
+</CardGroup>

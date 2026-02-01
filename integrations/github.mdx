@@ -1,0 +1,160 @@
+---
+title: "GitHub"
+description: "Connect GitHub for source code security"
+icon: "code"
+---
+
+The GitHub integration provides visibility into repository security posture and branch protection status.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **Check branch protection** | Analyze protection status across all accessible repos |
+| **Get repo protection** | Get detailed protection rules for a specific repo/branch |
+| **Query audit log** | Search audit events by username, IP, action (Enterprise Cloud only) |
+| **Query security events** | Filter for security-relevant actions (branch protection changes, access changes, token creation) |
+
+### Action Tools
+
+| Action | Description |
+|--------|-------------|
+| Enable branch protection | Enable basic branch protection (require PR reviews, prevent force push) |
+
+### What Hiro Cannot Do
+
+- Revoke personal access tokens
+- Remove collaborators
+- Delete repositories
+- Manage webhooks or deploy keys
+- Fine-grained permission management
+
+<Info>
+The GitHub integration is primarily read-focused for security posture analysis.
+</Info>
+
+## Setup
+
+### Connection Method
+
+Hiro connects via a **GitHub App**, not OAuth or personal access tokens.
+
+<Steps>
+  <Step title="Start connection">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations) and click **Connect to GitHub**.
+  </Step>
+  <Step title="Install the GitHub App">
+    You'll be redirected to GitHub to install the Hiro GitHub App.
+
+    Choose:
+    - Which organization to install to
+    - Which repositories to grant access (all or select)
+  </Step>
+  <Step title="Authorize">
+    Click **Install** to authorize the app.
+  </Step>
+  <Step title="Verify connection">
+    You'll be redirected back to Hiro with the connection confirmed.
+  </Step>
+</Steps>
+
+## Investigation Examples
+
+### Check branch protection across repos
+
+```
+Which of our repositories don't have branch protection enabled?
+```
+
+Hiro checks all accessible repos and returns:
+- Protected repos count
+- Unprotected repos with visibility (public/private)
+- Protection details for each protected repo
+- Security recommendations
+
+### Check specific repo
+
+```
+What are the branch protection rules for the api-server repo?
+```
+
+Returns:
+- Required PR reviews (approval count, dismiss stale reviews)
+- Status check requirements
+- Admin enforcement
+- Force push and deletion settings
+
+### Query audit logs (Enterprise Cloud only)
+
+```
+Show me security-relevant GitHub events in the last 24 hours
+```
+
+Monitored events include:
+- Branch protection changes (`protected_branch.destroy`, `protected_branch.policy_override`)
+- Repository access changes (`repo.add_member`, `repo.remove_member`)
+- Token and key creation (`personal_access_token.create`, `deploy_key.create`)
+- Webhook changes (`hook.create`, `hook.config_changed`)
+- Secret scanning alerts
+
+## Branch Protection
+
+### Enabling Protection
+
+Hiro can enable basic branch protection:
+
+```
+PROPOSED ACTION: Enable Branch Protection
+─────────────────────────────────────────
+Repository: acme/api-server
+Branch: main
+Settings:
+  • Require 1 PR review before merging
+  • Dismiss stale reviews when new commits pushed
+  • Enforce rules on admins
+  • Prevent force pushes
+  • Prevent branch deletion
+
+[Approve]  [Reject]
+```
+
+<Warning>
+This enables a standard protection configuration. For custom settings, configure directly in GitHub.
+</Warning>
+
+## Audit Log Access
+
+Audit log queries require **GitHub Enterprise Cloud**. Standard GitHub plans don't expose the audit log API.
+
+If you're on Enterprise Cloud, Hiro can search:
+- By GitHub username
+- By source IP address
+- By action type
+- By time range
+
+## Troubleshooting
+
+### "App not installed"
+
+The GitHub App may need to be installed or reinstalled. Click **Connect to GitHub** again.
+
+### "Repository not found"
+
+The app may not have access to that repository. Check the app's repository access in GitHub settings.
+
+### Audit log queries failing
+
+Audit log access requires GitHub Enterprise Cloud. Standard GitHub plans don't have API access to audit logs.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Connect cloud infrastructure.
+  </Card>
+</CardGroup>

@@ -1,0 +1,185 @@
+---
+title: "CrowdStrike"
+description: "Connect CrowdStrike Falcon for endpoint protection"
+icon: "shield"
+---
+
+The CrowdStrike integration provides endpoint detection visibility and enables host containment for compromised endpoints.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **Query detections** | Search detections by IP, hostname, username, time range |
+| **Correlate with AWS** | Find AWS sessions related to endpoint alerts |
+
+### Action Tools
+
+| Action | Description |
+|--------|-------------|
+| Contain host | Network-isolate an endpoint (maintains CrowdStrike connection) |
+| Lift containment | Restore network access to a contained host |
+| Update alert status | Change detection status (new, in_progress, true_positive, false_positive, closed, ignored) |
+
+<Warning>
+All actions require explicit approval before execution.
+</Warning>
+
+### Detection Ingestion
+
+Hiro automatically polls CrowdStrike for new detections and ingests them into the detection queue with:
+- AI-generated summaries
+- MITRE ATT&CK mapping
+- Device, user, and process details
+- Full raw detection data
+
+## Setup
+
+### Prerequisites
+
+- CrowdStrike Falcon console access
+- Ability to create API clients
+
+### Connection Steps
+
+<Steps>
+  <Step title="Create API credentials">
+    In the CrowdStrike console:
+    1. Go to **Support > API Clients and Keys**
+    2. Click **Add new API client**
+    3. Grant these scopes:
+       - **Detections**: Read
+       - **Hosts**: Read, Write
+       - **Alerts**: Read, Write
+  </Step>
+  <Step title="Copy credentials">
+    Copy the **Client ID** and **Client Secret**.
+  </Step>
+  <Step title="Connect in Hiro">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
+    1. Enter the Client ID
+    2. Enter the Client Secret
+    3. Enter the API base URL (e.g., `https://api.crowdstrike.com` or your regional URL)
+    4. Click **Connect**
+  </Step>
+</Steps>
+
+### Required API Scopes
+
+| Scope | Permission | Purpose |
+|-------|------------|---------|
+| Detections | Read | Query detections |
+| Hosts | Read | View endpoint information |
+| Hosts | Write | Contain/uncontain hosts |
+| Alerts | Read | View alert details |
+| Alerts | Write | Update alert status |
+
+## Host Containment
+
+Containment isolates a compromised endpoint from the network while maintaining the CrowdStrike cloud connection for remote response.
+
+### What Containment Does
+
+- Blocks all network traffic except to CrowdStrike cloud
+- Prevents lateral movement
+- Maintains remote management capability
+- Does NOT affect local processes
+
+### Containment Workflow
+
+```
+PROPOSED ACTION: Contain Host (CrowdStrike)
+───────────────────────────────────────────
+Device ID: abc123def456
+Hostname: LAPTOP-A1B2C3
+Reason: Active ransomware detected
+Evidence:
+  • Detection: Ransomware.Generic (Critical severity)
+  • File encryption activity at 14:32:15
+  • Process: suspicious.exe spawned from email attachment
+Confidence: High (96%)
+
+[Approve]  [Reject]
+```
+
+After approval, the host is immediately network-isolated.
+
+### Lifting Containment
+
+When remediation is complete:
+
+```
+PROPOSED ACTION: Lift Containment (CrowdStrike)
+───────────────────────────────────────────────
+Device ID: abc123def456
+Hostname: LAPTOP-A1B2C3
+Reason: Remediation confirmed complete
+
+[Approve]  [Reject]
+```
+
+## Investigation Examples
+
+### Query detections
+
+```
+Show me CrowdStrike detections from the last 24 hours
+```
+
+### Check specific host
+
+```
+What detections have occurred on LAPTOP-A1B2C3?
+```
+
+### Correlate with identity
+
+```
+A user's Okta account was compromised. Check their endpoint for related activity.
+```
+
+Hiro correlates the user's identity with their CrowdStrike-monitored endpoints.
+
+## Detection Status Management
+
+Update detection status as you investigate:
+
+| Status | Use When |
+|--------|----------|
+| `new` | Detection just received |
+| `in_progress` | Actively investigating |
+| `true_positive` | Confirmed threat |
+| `false_positive` | Confirmed not a threat |
+| `closed` | Investigation complete |
+| `ignored` | Intentionally not investigating |
+
+## Troubleshooting
+
+### "Authentication failed"
+
+- Verify Client ID and Client Secret are correct
+- Check that the API client is enabled in CrowdStrike
+- Verify the base URL matches your CrowdStrike region
+
+### "Insufficient permissions"
+
+The API client is missing required scopes. Create a new client with Detections (Read), Hosts (Read/Write), and Alerts (Read/Write).
+
+### Containment failed
+
+- The host may be offline
+- The CrowdStrike agent may be outdated
+- Check host status in the CrowdStrike console
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Connect cloud infrastructure.
+  </Card>
+</CardGroup>

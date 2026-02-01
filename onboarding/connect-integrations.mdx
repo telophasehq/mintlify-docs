@@ -1,0 +1,223 @@
+---
+title: "Integrations"
+description: "Link your security tools to Hiro"
+icon: "plug"
+---
+
+Connect your security tools to give Hiro the visibility it needs to investigate threats and take action.
+
+## Why Connect Integrations?
+
+Hiro's power comes from its ability to query and correlate data across your entire security stack. Each integration provides:
+
+- **Query tools** — Read-only access to investigate threats
+- **Action tools** — Remediation capabilities (with your approval)
+- **Context** — Enriches investigations with relevant data
+
+The more integrations you connect, the more effective Hiro becomes at finding and responding to threats.
+
+## Quick Start: Connect Your First Integration
+
+We recommend starting with your identity provider (Okta or Google Workspace), as identity is central to most security investigations.
+
+<Steps>
+  <Step title="Go to Integrations">
+    In Hiro, navigate to [**Settings > Integrations**](https://app.hiro.is/settings/integrations).
+  </Step>
+  <Step title="Select an integration">
+    Click **Connect** next to the integration you want to add.
+  </Step>
+  <Step title="Authorize access">
+    Follow the OAuth flow or enter credentials as required.
+  </Step>
+  <Step title="Verify connection">
+    Hiro will test the connection and show a success message.
+  </Step>
+</Steps>
+
+## Available Integrations
+
+### Identity & Access
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    **Recommended first integration**
+
+    User authentication, SSO, and lifecycle management. Query login events, check MFA status, suspend compromised users.
+  </Card>
+  <Card title="Google Workspace" icon="google" href="/integrations/google-workspace">
+    Enterprise productivity suite. View user activity, audit devices, investigate security events.
+  </Card>
+</CardGroup>
+
+### Cloud Infrastructure
+
+<CardGroup cols={2}>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    CloudTrail, IAM, EC2, and GuardDuty. Investigate API activity, analyze permissions, respond to cloud threats.
+  </Card>
+</CardGroup>
+
+### Endpoint Security
+
+<CardGroup cols={2}>
+  <Card title="CrowdStrike" icon="shield" href="/integrations/crowdstrike">
+    Falcon endpoint protection. Receive detection alerts, investigate endpoints, contain compromised hosts.
+  </Card>
+</CardGroup>
+
+### Developer Tools
+
+<CardGroup cols={2}>
+  <Card title="GitHub" icon="code" href="/integrations/github">
+    Source code and supply chain security. Audit repository access, track code changes, respond to exposure.
+  </Card>
+</CardGroup>
+
+### Communication
+
+<CardGroup cols={2}>
+  <Card title="Slack" icon="slack" href="/integrations/slack">
+    Team messaging. Receive security alerts, interact with Hiro via @mentions and DMs.
+  </Card>
+</CardGroup>
+
+## Recommended Integration Order
+
+For the best experience, we recommend connecting integrations in this order:
+
+<Steps>
+  <Step title="Identity provider (Okta or Google Workspace)">
+    **Why first**: Identity is the foundation of security investigations. Most threats involve compromised users, and Hiro needs to understand who your users are.
+  </Step>
+  <Step title="Cloud infrastructure (AWS)">
+    **Why second**: Cloud environments are common targets. CloudTrail provides rich API logs that Hiro correlates with identity data.
+  </Step>
+  <Step title="Endpoint protection (CrowdStrike)">
+    **Why third**: Endpoint detections are often the first sign of compromise. Connecting CrowdStrike lets Hiro automatically investigate and respond to alerts.
+  </Step>
+  <Step title="Source code (GitHub)">
+    **Why fourth**: Supply chain and code security is increasingly important. GitHub audit logs reveal access patterns and potential exposure.
+  </Step>
+  <Step title="Communication (Slack)">
+    **Why last**: Slack enables Hiro to contact users for verification during investigations—helpful but not required for core functionality.
+  </Step>
+</Steps>
+
+## Permissions and Access
+
+Each integration requires specific permissions. Hiro follows the principle of least privilege—we only request what's needed.
+
+### Read vs. Write Permissions
+
+| Permission Type | Purpose | Required? |
+|----------------|---------|-----------|
+| **Read** | Query logs, list users, view configuration | Yes |
+| **Write** | Suspend users, revoke access, contain hosts | Optional |
+
+<Info>
+Write permissions are optional. Without them, Hiro can investigate threats but will provide manual instructions for remediation instead of executing actions directly.
+</Info>
+
+### What Hiro Can Access
+
+When you connect an integration, Hiro can:
+
+- Query logs and events on-demand during investigations
+- List users, groups, and resources
+- Read configuration and policies
+- (With write permissions) Execute approved remediation actions
+
+Hiro does **not**:
+- Store your raw logs permanently (except detection snapshots)
+- Access data outside of investigations
+- Make changes without your explicit approval
+
+## Managing Integrations
+
+### View Integration Status
+
+Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations) to see all connected integrations and their status:
+
+| Status | Meaning |
+|--------|---------|
+| **Connected** | Working normally |
+| **Error** | Connection issue—click for details |
+| **Expired** | OAuth token needs refresh |
+
+### Refresh Credentials
+
+If an integration shows an error or expired status:
+
+1. Click on the integration
+2. Click **Reconnect**
+3. Complete the authorization flow again
+
+### Disconnect an Integration
+
+To remove an integration:
+
+1. Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations)
+2. Click on the integration
+3. Click **Disconnect**
+4. Confirm the disconnection
+
+<Warning>
+Disconnecting an integration immediately revokes Hiro's access. Active investigations using that integration will show errors until it's reconnected.
+</Warning>
+
+## Multi-Account Support
+
+### AWS
+
+Deploy Hiro's CloudFormation template to each AWS account:
+
+1. Download the template from [**Settings > Integrations**](https://app.hiro.is/settings/integrations)
+2. Deploy to each account you want to monitor
+3. Add each Role ARN to Hiro
+
+### Multiple Okta Organizations
+
+Connect multiple Okta orgs by clicking **Add Another** after connecting the first one.
+
+### Multiple GitHub Organizations
+
+The Hiro GitHub App can be installed in multiple organizations. Each installation is tracked separately.
+
+## Troubleshooting
+
+### "Authorization Failed"
+
+- Ensure you have admin permissions in the target system
+- Check that API access is enabled (some organizations restrict this)
+- Verify you're authorizing the correct account
+
+### "Connection Test Failed"
+
+- The credentials may have expired—try reconnecting
+- Check if there are IP restrictions on API access
+- Verify the integration hasn't been disabled on the provider side
+
+### "Insufficient Permissions"
+
+- The account used to connect may not have required permissions
+- Some actions require elevated privileges (e.g., Super Admin in Okta)
+- Check the integration's documentation for required permissions
+
+### Need Help?
+
+Contact support@hiro.is with:
+- The integration you're trying to connect
+- Any error messages you're seeing
+- Screenshots of the issue
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Run your first investigation with Hiro.
+  </Card>
+  <Card title="Integration Details" icon="grid-2" href="/integrations/overview">
+    Learn more about each integration's capabilities.
+  </Card>
+</CardGroup>

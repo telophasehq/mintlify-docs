@@ -1,0 +1,172 @@
+---
+title: "AWS"
+description: "Connect AWS for cloud infrastructure security"
+icon: "cloud"
+---
+
+The AWS integration provides visibility into cloud infrastructure activity and enables response to cloud-based threats.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **CloudTrail search** | Search API activity by username, access key, IP, event type |
+| **IAM role analysis** | Scan all roles for over-privileged access |
+| **Single role analysis** | Deep security analysis of a specific role |
+| **Auth model discovery** | Identify how users authenticate (Identity Center, SAML, IAM, etc.) |
+| **Identity mapping** | Map user email to AWS role sessions |
+| **CrowdStrike correlation** | Find AWS sessions related to endpoint alerts |
+
+### Action Tools
+
+| Action | Description |
+|--------|-------------|
+| Terminate EC2 instances | Stop and remove compromised instances |
+| Disable IAM user | Deactivate all access keys for a user |
+| Delete IAM user | Remove user, keys, policies, group memberships, MFA |
+| Delete access key | Remove a specific compromised access key |
+| Detach admin policies | Remove AdministratorAccess, PowerUserAccess, IAMFullAccess |
+| Block IP in WAF | Add IP to WAF IP set to block traffic |
+
+<Warning>
+All actions require explicit approval before execution.
+</Warning>
+
+## Setup
+
+### Connection Method
+
+Hiro connects via **IAM AssumeRole** with temporary credentials. You create an IAM role in your AWS account that Hiro can assume.
+
+<Steps>
+  <Step title="Create an IAM role">
+    Create a role in your AWS account with:
+    - **Trusted entity**: The Hiro AWS account (provided during setup)
+    - **External ID**: Optional but recommended for security
+  </Step>
+  <Step title="Attach permissions">
+    Attach policies granting:
+
+    **For queries (read-only):**
+    - `cloudtrail:LookupEvents`
+    - `iam:Get*`, `iam:List*`
+    - `ec2:Describe*`
+    - `wafv2:List*`, `wafv2:Get*`
+
+    **For actions (optional):**
+    - `iam:UpdateAccessKey`, `iam:DeleteAccessKey`, `iam:DeleteUser`
+    - `iam:DetachUserPolicy`, `iam:RemoveUserFromGroup`
+    - `ec2:TerminateInstances`
+    - `wafv2:UpdateIPSet`
+  </Step>
+  <Step title="Connect in Hiro">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
+    1. Enter the Role ARN
+    2. Enter the External ID (if configured)
+    3. Click **Connect**
+  </Step>
+</Steps>
+
+## Investigation Examples
+
+### Search CloudTrail
+
+```
+Show me all API calls by john@company.com in the last 24 hours
+```
+
+Hiro searches CloudTrail and returns:
+- API actions performed
+- Source IP addresses
+- Success/failure status
+- Request parameters
+
+### Investigate an access key
+
+```
+What has access key AKIA... done in the last week?
+```
+
+### Analyze IAM permissions
+
+```
+What permissions does the AdminRole have? Is it over-privileged?
+```
+
+Hiro analyzes the role and reports:
+- Attached policies
+- Effective permissions
+- Security issues and risk score
+- Recommendations
+
+### Discover auth patterns
+
+```
+How do users authenticate to AWS in this account?
+```
+
+Hiro analyzes CloudTrail to identify:
+- Identity Center
+- SAML federation
+- OIDC federation
+- IAM users
+- Access keys
+
+## Remediation Actions
+
+Example action proposal:
+
+```
+PROPOSED ACTION: Delete AWS Access Key
+──────────────────────────────────────
+Access Key: AKIA...XYZ
+Owner: john@company.com
+Reason: Key used from suspicious IP after Okta compromise
+Evidence:
+  • Key used from 185.220.101.1 (Tor exit node)
+  • 47 API calls in 5 minutes (unusual volume)
+  • Attempted AssumeRole to AdminRole
+Confidence: High (94%)
+
+[Approve]  [Reject]
+```
+
+## Multi-Account Support
+
+To monitor multiple AWS accounts:
+
+1. Create the IAM role in each account
+2. Add each Role ARN in Hiro's AWS integration settings
+3. Hiro will aggregate activity across all accounts during investigations
+
+## What's Not Supported
+
+- S3-specific tools
+- RDS, Lambda, DynamoDB tools
+- CloudFormation management
+
+## Troubleshooting
+
+### "Access Denied" errors
+
+- Verify the role ARN is correct
+- Check that Hiro's AWS account is in the trust policy
+- Verify the External ID matches (if configured)
+- Ensure required permissions are attached
+
+### Missing events
+
+CloudTrail events can take up to 15 minutes to appear. Recent activity may not show immediately.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="CrowdStrike" icon="shield" href="/integrations/crowdstrike">
+    Connect endpoint protection.
+  </Card>
+</CardGroup>

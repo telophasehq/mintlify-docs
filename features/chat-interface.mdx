@@ -1,0 +1,228 @@
+---
+title: "Chat Interface"
+description: "Investigate threats using natural language conversations"
+icon: "message"
+---
+
+The Chat interface is Hiro's primary investigation tool. Ask questions in plain English and Hiro automatically queries your security stack, correlates data, and presents actionable findings.
+
+## How It Works
+
+When you send a message, Hiro's AI agent:
+
+1. **Parses your intent** — Understands what you're asking about
+2. **Selects relevant tools** — Chooses which integrations to query
+3. **Executes queries** — Fetches data from your security tools
+4. **Analyzes results** — Identifies patterns and anomalies
+5. **Responds with findings** — Presents information in natural language
+
+<Info>
+Hiro streams responses in real-time, so you can see the agent's progress as it works through your query.
+</Info>
+
+## Starting a Conversation
+
+Navigate to **Chat** in the left sidebar. You'll see the conversation interface with a text input at the bottom.
+
+### What Can I Ask Hiro?
+
+Hiro understands natural language queries across your entire security stack. Here are examples organized by use case:
+
+<AccordionGroup>
+  <Accordion title="User Investigation">
+    - What has john@company.com been doing in the last 24 hours?
+    - Show me all activity for this user across Okta, AWS, and GitHub
+    - When did this user last log in, and from where?
+    - What applications does jane@company.com have access to?
+    - Has this user's behavior changed recently?
+    - List all users who accessed sensitive repos in the last week
+  </Accordion>
+
+  <Accordion title="Suspicious Activity">
+    - Show me all failed login attempts from IP 185.220.101.1
+    - Which users logged in from countries we don't operate in?
+    - Find logins from Tor exit nodes in the last 24 hours
+    - Are there any impossible travel scenarios today?
+    - Show me users with logins from multiple countries in the same hour
+    - What IPs have had more than 10 failed logins today?
+  </Accordion>
+
+  <Accordion title="Identity & Access">
+    - Which users in Okta have MFA disabled?
+    - List all users with admin privileges
+    - Who was added to the Engineering group this week?
+    - Show me users who haven't logged in for 90 days
+    - Which service accounts have console access?
+    - Find users with both AWS and GitHub admin access
+  </Accordion>
+
+  <Accordion title="Cloud Security">
+    - List all IAM users with console access but no MFA
+    - Which IAM roles have AdministratorAccess?
+    - Show me S3 buckets that were accessed from unusual IPs
+    - What access keys were created in the last week?
+    - Find EC2 instances with public IPs in production
+    - Who has permissions to modify security groups?
+  </Accordion>
+
+  <Accordion title="Endpoint Security">
+    - Show me CrowdStrike detections from the last 24 hours
+    - Which endpoints have critical severity alerts?
+    - What detections involve ransomware indicators?
+    - Find all alerts related to this user's devices
+    - Are there any contained hosts right now?
+  </Accordion>
+
+  <Accordion title="Code & Repository">
+    - Who accessed the infrastructure repo yesterday?
+    - Show me commits to production branches after hours
+    - Which external collaborators have repo access?
+    - Find repos with secrets scanning alerts
+    - What GitHub apps have access to our org?
+  </Accordion>
+
+  <Accordion title="Incident Correlation">
+    - Find all AWS activity from users who logged in from this IP
+    - Correlate this Okta user with their CrowdStrike endpoints
+    - What else did this access key do before it was compromised?
+    - Show me all activity from this user across all systems
+    - Connect this detection to related identity events
+  </Accordion>
+</AccordionGroup>
+
+## Context and Follow-ups
+
+Hiro maintains conversation context, allowing natural follow-up questions:
+
+<Steps>
+  <Step title="Initial Query">
+    ```
+    Show me failed logins in Okta from the last hour
+    ```
+    Hiro returns a list of failed login attempts with usernames, IPs, and timestamps.
+  </Step>
+  <Step title="Follow-up">
+    ```
+    Which of these users have admin privileges?
+    ```
+    Hiro correlates the previous results with user group memberships.
+  </Step>
+  <Step title="Deeper Investigation">
+    ```
+    What other activity has the admin user performed today?
+    ```
+    Hiro expands the investigation to cover all activity from the identified admin.
+  </Step>
+</Steps>
+
+## Streaming Responses
+
+Hiro's responses stream in real-time. As the agent works, you'll see:
+
+- **Tool calls** — Which integrations are being queried
+- **Intermediate results** — Data as it's retrieved
+- **Analysis** — The agent's reasoning about the findings
+- **Final summary** — Actionable conclusions
+
+This transparency helps you understand how Hiro reached its conclusions and builds trust in the findings.
+
+## Proposing Actions
+
+When Hiro identifies a threat, it may propose remediation actions directly in the chat:
+
+```
+Based on my analysis, I recommend the following actions:
+
+1. **Suspend user john.smith@company.com in Okta**
+   - Reason: Multiple failed logins from known malicious IP
+   - Confidence: High (85%)
+
+2. **Clear all active sessions for this user**
+   - Reason: Potential session hijacking
+   - Confidence: Medium (70%)
+
+Would you like me to proceed with these actions?
+```
+
+You can approve or reject each action, or ask for more information before deciding.
+
+## Conversation History
+
+All conversations are automatically saved. To access previous conversations:
+
+1. Click the conversation selector in the top-left of the chat interface
+2. Browse or search your conversation history
+3. Click any conversation to resume it
+
+<Tip>
+Resume old conversations to continue investigations with full context preserved.
+</Tip>
+
+## Best Practices
+
+### Be Specific with Timeframes
+
+```
+# Good
+Show me logins from the last 24 hours
+
+# Better
+Show me logins between 2pm and 5pm yesterday UTC
+```
+
+### Provide Context When Available
+
+```
+# Good
+Investigate user john@company.com
+
+# Better
+Investigate user john@company.com - they reported their laptop was stolen yesterday
+```
+
+### Use Follow-ups Instead of Repeating
+
+```
+# Instead of starting over
+Show me all activity from john@company.com in AWS
+
+# Use a follow-up
+What about their AWS activity?
+```
+
+### Ask for Specific Formats
+
+```
+Show me failed logins grouped by source IP, sorted by count
+```
+
+## Integration with Fight Mode
+
+For active incidents requiring continuous monitoring, you can escalate from Chat to Fight Mode:
+
+```
+This looks like an active attack. Start Fight Mode and continuously
+monitor for activity from this IP and any users it has touched.
+```
+
+Hiro will transition to Fight Mode with the current investigation context preserved.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Enter` | Send message |
+| `Shift + Enter` | New line |
+| `Cmd/Ctrl + K` | New conversation |
+| `Cmd/Ctrl + /` | Focus chat input |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Fight Mode" icon="swords" href="/features/fight-mode">
+    Learn about continuous threat hunting for active incidents.
+  </Card>
+  <Card title="Remediation" icon="hammer" href="/features/remediation">
+    Understand available actions and approval workflows.
+  </Card>
+</CardGroup>

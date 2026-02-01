@@ -1,0 +1,172 @@
+---
+title: "Slack"
+description: "Connect Slack for real-time alerts and interactive investigations"
+icon: "slack"
+---
+
+The Slack integration enables real-time security alerts in your Slack workspace and lets your team interact with Hiro directly from Slack.
+
+## Capabilities
+
+### What Hiro Can Do
+
+| Capability | Description |
+|------------|-------------|
+| **Send alerts** | Push security detections to a configured channel |
+| **Respond to questions** | Answer security queries when @mentioned or DMed |
+| **Reset user sessions** | Force re-authentication (Enterprise Grid only) |
+
+### What Hiro Cannot Do
+
+- Deactivate or suspend Slack users
+- Send arbitrary messages to users
+- Access message content in channels (only responds to @mentions and DMs)
+
+## Setup
+
+### Prerequisites
+
+- Slack workspace admin access
+- Admin role in Hiro
+
+### Connection Steps
+
+<Steps>
+  <Step title="Navigate to Integrations">
+    Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations) in Hiro and click **Connect** next to Slack.
+  </Step>
+  <Step title="Choose Enterprise Grid (optional)">
+    If you're on Slack Enterprise Grid and want session reset capabilities, check the **Enterprise Grid** option before connecting.
+  </Step>
+  <Step title="Authorize in Slack">
+    You'll be redirected to Slack. Review the requested permissions and click **Allow**.
+  </Step>
+  <Step title="Select notification channel">
+    After connecting, select which channel should receive security alerts.
+  </Step>
+  <Step title="Send test notification">
+    Click **Test** to verify alerts are working.
+  </Step>
+</Steps>
+
+### Permissions Requested
+
+| Scope | Purpose |
+|-------|---------|
+| `chat:write` | Send alert messages to channels |
+| `channels:read` | List channels for notification selection |
+| `im:read`, `im:write` | Receive and respond to direct messages |
+| `users:read`, `users:read.email` | Look up user information |
+| `app_mentions:read` | Respond when @mentioned |
+
+**Enterprise Grid additional scope:**
+| Scope | Purpose |
+|-------|---------|
+| `admin.users:write` | Reset user sessions |
+
+## Features
+
+### Security Alerts
+
+When detections occur, Hiro sends formatted alerts to your configured channel:
+
+- Detection title and severity
+- Key details and indicators
+- Link to view in Hiro dashboard
+
+To configure:
+1. Go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations)
+2. Select a channel from the dropdown
+3. Click **Save**
+
+### Interactive Bot
+
+Your team can interact with Hiro directly in Slack:
+
+**@mention in a channel:**
+```
+@Hiro what happened with john@company.com in the last hour?
+```
+
+**Direct message:**
+```
+Show me failed logins from the last 24 hours
+```
+
+Hiro responds using the same investigation capabilities as the web interface—querying your connected integrations and providing actionable findings.
+
+### Session Reset (Enterprise Grid Only)
+
+With Enterprise Grid, Hiro can force users to re-authenticate:
+
+```
+PROPOSED ACTION: Reset Slack Session
+────────────────────────────────────
+User: john@company.com (U1234567890)
+Reason: Account compromise suspected
+Effect: User will be logged out of Slack on all devices
+
+[Approve]  [Reject]
+```
+
+<Info>
+Session reset requires the `admin.users:write` scope, which is only available on Slack Enterprise Grid plans.
+</Info>
+
+## How the Bot Works
+
+When you @mention Hiro or send a DM:
+
+1. Slack sends the message to Hiro
+2. Hiro's AI agent processes your question
+3. The agent queries your connected integrations (Okta, AWS, etc.)
+4. Findings stream back to Slack in real-time
+5. If actions are needed, they're proposed in the Hiro dashboard
+
+The bot has access to all the same query tools as the web interface, but remediation actions still require approval through the dashboard.
+
+## Example Interactions
+
+**Check user activity:**
+```
+@Hiro what has jane@company.com done in Okta today?
+```
+
+**Investigate an IP:**
+```
+@Hiro show me all activity from IP 185.220.101.1
+```
+
+**Quick status check:**
+```
+@Hiro is john@company.com's account suspended?
+```
+
+## Troubleshooting
+
+### Bot not responding
+
+- Verify the integration is connected in [**Settings > Integrations**](https://app.hiro.is/settings/integrations)
+- Check that you're @mentioning the bot correctly
+- Try sending a direct message to the bot instead
+
+### Alerts not appearing
+
+- Verify a notification channel is selected
+- Check that the bot has been added to the channel
+- Try sending a test notification from Settings
+
+### "Missing scope" error
+
+The connected Slack app may be missing required permissions. Disconnect and reconnect the integration.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Connect identity management.
+  </Card>
+  <Card title="CrowdStrike" icon="shield" href="/integrations/crowdstrike">
+    Connect endpoint protection.
+  </Card>
+</CardGroup>
