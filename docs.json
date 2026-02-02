@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "aspen",
   "name": "Hiro",
   "colors": {
     "primary": "#6366F1",
@@ -8,65 +8,128 @@
     "dark": "#4F46E5"
   },
   "favicon": "/favicon.svg",
+  "icons": {
+    "library": "lucide"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Home",
+        "icon": "house",
         "groups": [
           {
             "group": "Getting Started",
+            "icon": "rocket",
             "pages": [
               "index",
               "quickstart",
               "concepts"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Onboarding",
+        "icon": "user-plus",
+        "groups": [
           {
-            "group": "Onboarding",
+            "group": "Setup",
+            "icon": "settings",
             "pages": [
               "onboarding/signup",
               "onboarding/sso",
               "onboarding/connect-integrations"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Features",
+        "icon": "sparkles",
+        "groups": [
           {
-            "group": "Features",
+            "group": "Investigation",
+            "icon": "search",
             "pages": [
               "features/chat-interface",
-              "features/fight-mode",
-              "features/detections",
-              "features/remediation"
+              "features/fight-mode"
             ]
           },
           {
-            "group": "Integrations",
+            "group": "Response",
+            "icon": "shield",
             "pages": [
-              "integrations/overview",
+              "features/detections",
+              "features/remediation"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Integrations",
+        "icon": "plug",
+        "groups": [
+          {
+            "group": "Overview",
+            "icon": "layout-grid",
+            "pages": [
+              "integrations/overview"
+            ]
+          },
+          {
+            "group": "Identity",
+            "icon": "key",
+            "pages": [
               "integrations/okta",
+              "integrations/google-workspace"
+            ]
+          },
+          {
+            "group": "Cloud & Infrastructure",
+            "icon": "cloud",
+            "pages": [
               "integrations/aws",
-              "integrations/crowdstrike",
               "integrations/datadog",
-              "integrations/github",
-              "integrations/google-workspace",
+              "integrations/wiz"
+            ]
+          },
+          {
+            "group": "Endpoint & Code",
+            "icon": "monitor",
+            "pages": [
+              "integrations/crowdstrike",
+              "integrations/github"
+            ]
+          },
+          {
+            "group": "Communication",
+            "icon": "message-circle",
+            "pages": [
               "integrations/slack"
             ]
           }
         ]
+      },
+      {
+        "tab": "App",
+        "icon": "external-link",
+        "href": "https://app.hiro.is"
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "App",
-          "href": "https://app.hiro.is",
-          "icon": "shield-halved"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
+  },
+  "background": {
+    "decoration": "grid",
+    "color": {
+      "dark": "#050A16"
+    }
+  },
+  "appearance": {
+    "default": "dark",
+    "strict": false
   },
   "navbar": {
     "links": [
@@ -86,8 +149,7 @@
       "copy",
       "view",
       "chatgpt",
-      "claude",
-      "cursor"
+      "claude"
     ]
   },
   "footer": {

@@ -1,121 +1,51 @@
 ---
 title: "Quickstart"
-description: "Get up and running with Hiro in 5 minutes"
-icon: "rocket"
+description: "Connect an integration and run your first investigation"
+mode: "center"
 ---
 
-This guide walks you through connecting your first integration and running your first investigation with your AI Security Engineer.
+## Goal
 
-## Prerequisites
-
-- A Hiro account ([sign up here](https://app.hiro.is))
-- Admin access to at least one supported integration (Okta, AWS, CrowdStrike, etc.)
-
-## Step 1: Sign in and create your organization
+Connect Okta, ask Hiro a question, and see results.
 
 <Steps>
-  <Step title="Sign in to Hiro">
-    Navigate to [app.hiro.is](https://app.hiro.is) and sign in with your SSO provider or email.
+  <Step title="Sign up">
+    Go to [app.hiro.is](https://app.hiro.is) and create an account.
   </Step>
-  <Step title="Create your organization">
-    If this is your first time, you'll be prompted to create an organization. This is where your integrations and team members will live.
-  </Step>
-</Steps>
+  <Step title="Connect Okta">
+    Go to **Settings > Integrations**, click **Connect** next to Okta, and authorize access.
 
-## Step 2: Connect your first integration
-
-Hiro's power comes from deep integrations with your security stack. Let's connect Okta as an example.
-
-<Steps>
-  <Step title="Navigate to Settings">
-    Click on **Settings** in the left sidebar, then select **Integrations**.
-  </Step>
-  <Step title="Select Okta">
-    Find Okta in the list of available integrations and click **Connect**.
-  </Step>
-  <Step title="Authorize access">
-    You'll be redirected to Okta to authorize Hiro. Grant the requested permissions—Hiro needs read access to user logs and the ability to perform administrative actions for remediations.
-  </Step>
-  <Step title="Verify connection">
-    Once connected, you'll see a green checkmark next to Okta in your integrations list.
-  </Step>
-</Steps>
-
-<Tip>
-For detailed setup instructions for each integration, see the [Integrations](/integrations/overview) section.
-</Tip>
-
-<Info>
-**Using a different identity provider?** The steps above use Okta as an example, but Hiro also integrates with [Google Workspace](/integrations/google-workspace) and [AWS](/integrations/aws). The connection process is similar—navigate to Settings > Integrations and follow the prompts.
-</Info>
-
-## Step 3: Run your first investigation
-
-Now let's investigate a security event using Hiro's conversational interface.
-
-<Steps>
-  <Step title="Open the Chat">
-    Click **Chat** in the left sidebar to open Hiro's investigation interface.
+    <Info>
+    Using a different provider? See [Integrations](/integrations/overview) for AWS, CrowdStrike, GitHub, and more.
+    </Info>
   </Step>
   <Step title="Ask a question">
-    Try a question like:
-
+    Open **Chat** and try:
     ```
-    Show me failed login attempts in Okta from the last 24 hours
+    Show me failed login attempts from the last 24 hours
     ```
-
-    Hiro will automatically query your Okta logs, analyze the results, and present findings.
   </Step>
   <Step title="Follow up">
-    Hiro maintains context, so you can ask follow-up questions:
-
+    Hiro keeps context. Ask:
     ```
     Which of these users have MFA disabled?
     ```
-
-    Hiro will correlate the previous results with user MFA status.
   </Step>
-</Steps>
-
-## Step 4: Try Fight Mode
-
-Fight Mode is Hiro's continuous threat hunting capability. It's designed for active incident response.
-
-<Steps>
-  <Step title="Start Fight Mode">
-    Click **Fight Mode** in the left sidebar and then **New Session**.
-  </Step>
-  <Step title="Describe the threat">
-    Enter initial threat indicators, for example:
-
+  <Step title="Try Fight Mode">
+    For active threats, open **Fight Mode** and enter:
     ```
     Investigate suspicious activity from IP 185.220.101.1
     ```
-  </Step>
-  <Step title="Watch Hiro hunt">
-    Hiro will continuously scan your integrations for activity related to this IP:
-    - Discovering new indicators (users, credentials, resources)
-    - Reporting specific findings with timestamps
-    - Proposing remediation actions
-  </Step>
-  <Step title="Approve actions">
-    When Hiro proposes an action (like suspending a compromised user), review the details and click **Approve** to execute, or **Reject** to skip.
+    Hiro will continuously hunt and propose actions for your approval.
   </Step>
 </Steps>
 
-## What's next?
+## Next steps
 
-<CardGroup cols={2}>
-  <Card title="Core Concepts" icon="book" href="/concepts">
-    Understand how Hiro's investigation agent and approval system work.
-  </Card>
-  <Card title="Add more integrations" icon="plug" href="/integrations/overview">
-    Connect AWS, CrowdStrike, GitHub, and other tools for deeper visibility.
-  </Card>
-  <Card title="Fight Mode deep dive" icon="swords" href="/features/fight-mode">
-    Learn advanced Fight Mode techniques for incident response.
-  </Card>
-  <Card title="Remediation actions" icon="hammer" href="/features/remediation">
-    See all available remediation actions and approval levels.
-  </Card>
-</CardGroup>
+Add more integrations: [AWS](/integrations/aws), [CrowdStrike](/integrations/crowdstrike), [GitHub](/integrations/github), [Datadog](/integrations/datadog)
+
+Set up SSO: [SSO Configuration](/onboarding/sso)
+
+Learn Fight Mode: [Fight Mode](/features/fight-mode)
+
+See all actions: [Remediation](/features/remediation)

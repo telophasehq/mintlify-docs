@@ -14,6 +14,7 @@ Hiro's power comes from deep integrations with your security tools. Each integra
 | AWS | IAM AssumeRole | [Open in dashboard](https://app.hiro.is/settings/integrations) |
 | CrowdStrike | API Client credentials | [Open in dashboard](https://app.hiro.is/settings/integrations) |
 | Datadog | API Key + Application Key | [Open in dashboard](https://app.hiro.is/settings/integrations) |
+| Wiz | OAuth 2.0 Service Account | [Open in dashboard](https://app.hiro.is/settings/integrations) |
 | GitHub | GitHub App installation | [Open in dashboard](https://app.hiro.is/settings/integrations) |
 | Google Workspace | OAuth 2.0 (read-only) | [Open in dashboard](https://app.hiro.is/settings/integrations) |
 | Slack | OAuth 2.0 | [Open in dashboard](https://app.hiro.is/settings/integrations) |
@@ -41,6 +42,11 @@ Hiro's power comes from deep integrations with your security tools. Each integra
 
     Search logs by user, IP, hostname, or custom query. Correlate with other integrations.
   </Card>
+  <Card title="Wiz" icon="shield-check" href="/integrations/wiz">
+    **Read-only + Deep linking**
+
+    Import cloud security findings. Deep link from Wiz for instant AI analysis.
+  </Card>
   <Card title="GitHub" icon="code" href="/integrations/github">
     **Mostly read-only**
 
@@ -66,6 +72,7 @@ Hiro's power comes from deep integrations with your security tools. Each integra
 | **AWS** | CloudTrail, IAM analysis | Terminate EC2, delete IAM users/keys, WAF blocking | Uses IAM AssumeRole |
 | **CrowdStrike** | Detections, host info | Contain/uncontain hosts, update alerts | Auto-ingests detections |
 | **Datadog** | Log search, correlation | None (read-only) | Supports all Datadog sites |
+| **Wiz** | Cloud security issues, CSPM | None (read-only) | Deep linking for instant investigation |
 | **GitHub** | Branch protection, audit logs | Enable branch protection only | Audit logs require Enterprise Cloud |
 | **Google Workspace** | Users, groups, devices, reports | None (read-only) | All scopes are read-only |
 | **Slack** | User info | Reset sessions (Enterprise only), send alerts | Primarily for alerts and bot |

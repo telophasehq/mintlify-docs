@@ -1,0 +1,140 @@
+---
+title: "Wiz"
+description: "Connect Wiz for cloud security posture management"
+icon: "cloud"
+---
+
+The Wiz integration imports cloud security findings and enables deep linking for instant investigation of Wiz issues in Hiro.
+
+## Capabilities
+
+### Query Tools
+
+| Tool | What It Does |
+|------|--------------|
+| **Import issues** | Fetch security issues from Wiz with severity and status filters |
+| **Deep link investigation** | Instantly investigate a specific Wiz issue from a link |
+
+### What Gets Imported
+
+Hiro imports Wiz issues including:
+
+- **Issue details** — ID, status, severity, timestamps
+- **Resource info** — Cloud platform, region, resource type, tags
+- **Project context** — Project name, owners, business unit, risk profile
+- **Rule information** — Security controls, recommendations, compliance frameworks
+
+### Action Tools
+
+The Wiz integration is **read-only**. Hiro can query and analyze Wiz findings but cannot modify issues in Wiz.
+
+## Setup
+
+### Prerequisites
+
+- Wiz account with API access
+- Ability to create service accounts in Wiz
+
+### Connection Steps
+
+<Steps>
+  <Step title="Create a service account in Wiz">
+    In the Wiz console:
+    1. Go to **Settings > Service Accounts**
+    2. Click **Create Service Account**
+    3. Name it (e.g., "Hiro Integration")
+    4. Grant read permissions for issues and projects
+    5. Copy the **Client ID** and **Client Secret**
+  </Step>
+  <Step title="Note your API endpoints">
+    Find your regional endpoints:
+
+    | Region | API Endpoint | Auth Endpoint |
+    |--------|--------------|---------------|
+    | US | `https://api.us1.app.wiz.io/graphql` | `https://auth.app.wiz.io/oauth/token` |
+    | EU | `https://api.eu1.app.wiz.io/graphql` | `https://auth.app.wiz.io/oauth/token` |
+    | US Gov | `https://api.us2.app.wiz.io/graphql` | `https://auth.gov.wiz.io/oauth/token` |
+  </Step>
+  <Step title="Connect in Hiro">
+    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
+    1. Click **Connect** next to Wiz
+    2. Enter your **Client ID** and **Client Secret**
+    3. Enter your **API Endpoint** and **Auth Endpoint**
+    4. Click **Connect**
+  </Step>
+</Steps>
+
+## Deep Linking
+
+Wiz issues are automatically synced to Hiro as detections. Deep linking lets you jump directly from Wiz to the detection in Hiro.
+
+### How It Works
+
+1. Hiro automatically syncs Wiz issues as detections
+2. From a Wiz issue, click the deep link to Hiro
+3. You're taken directly to the detection in Hiro
+
+### Deep Link Format
+
+```
+https://app.hiro.is/investigate/wiz?issue_id={wiz_issue_id}
+```
+
+Replace `{wiz_issue_id}` with the Wiz issue ID.
+
+### Use Cases
+
+- **Seamless workflow** — Click through from Wiz without switching context
+- **Start investigating** — Open Chat or Fight Mode from the detection
+- **Correlate findings** — Cross-reference with Okta, AWS, and other integrations
+
+## Investigation Examples
+
+### Analyze a Wiz finding
+
+```
+What's the risk of this Wiz finding? What resources are affected?
+```
+
+### Correlate with identity
+
+```
+Who has access to the affected resource? Check Okta and AWS.
+```
+
+### Check for related activity
+
+```
+Has anyone accessed this resource recently? Check CloudTrail.
+```
+
+## Troubleshooting
+
+### "Authentication failed"
+
+- Verify the Client ID and Client Secret are correct
+- Check that the service account is still active in Wiz
+- Ensure you're using the correct regional endpoints
+
+### "Issue not found"
+
+- The Wiz issue may have been resolved or deleted
+- Verify the issue ID is correct
+- Check that the service account has permission to view the issue
+
+### Deep link not working
+
+- Ensure the Wiz integration is connected in Hiro
+- Verify the issue ID format is correct
+- Check that you're logged into Hiro
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AWS" icon="cloud" href="/integrations/aws">
+    Correlate Wiz findings with CloudTrail.
+  </Card>
+  <Card title="Okta" icon="key" href="/integrations/okta">
+    Check who has access to affected resources.
+  </Card>
+</CardGroup>
