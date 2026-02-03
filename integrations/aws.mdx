@@ -42,29 +42,90 @@ Hiro connects via **IAM AssumeRole** with temporary credentials. You create an I
 
 <Steps>
   <Step title="Create an IAM role">
-    Create a role in your AWS account with:
-    - **Trusted entity**: The Hiro AWS account (provided during setup)
-    - **External ID**: Optional but recommended for security
+    Create a new IAM role in your AWS account:
+
+    1. Go to **IAM > Roles > Create role**
+    2. Select **Custom trust policy**
+    3. Use this trust policy (replace `YOUR_EXTERNAL_ID` with a unique identifier):
+
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::605862532274:root"
+          },
+          "Action": "sts:AssumeRole",
+          "Condition": {
+            "StringEquals": {
+              "sts:ExternalId": "YOUR_EXTERNAL_ID"
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+    <Tip>
+    The External ID can be any unique string (e.g., your organization ID, a UUID, or a random string). It prevents confused deputy attacks by ensuring only authorized parties can assume the role.
+    </Tip>
   </Step>
   <Step title="Attach permissions">
-    Attach policies granting:
+    Attach the AWS managed policy for your desired access level:
 
-    **For queries (read-only):**
-    - `cloudtrail:LookupEvents`
-    - `iam:Get*`, `iam:List*`
-    - `ec2:Describe*`
-    - `wafv2:List*`, `wafv2:Get*`
+    **For investigations (recommended):**
+    - `arn:aws:iam::aws:policy/ReadOnlyAccess` - Full read access across all AWS services
 
-    **For actions (optional):**
-    - `iam:UpdateAccessKey`, `iam:DeleteAccessKey`, `iam:DeleteUser`
-    - `iam:DetachUserPolicy`, `iam:RemoveUserFromGroup`
-    - `ec2:TerminateInstances`
-    - `wafv2:UpdateIPSet`
+    **Alternative options:**
+    - `arn:aws:iam::aws:policy/SecurityAudit` - Security-focused read access
+    - `arn:aws:iam::aws:policy/job-function/ViewOnlyAccess` - Limited read access (not recommended - missing IAM visibility)
+
+    **For remediation actions (optional):**
+
+    Create a custom policy with:
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "IAMRemediation",
+          "Effect": "Allow",
+          "Action": [
+            "iam:UpdateAccessKey",
+            "iam:DeleteAccessKey",
+            "iam:DeleteUser",
+            "iam:DetachUserPolicy",
+            "iam:RemoveUserFromGroup",
+            "iam:DeleteLoginProfile"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Sid": "EC2Remediation",
+          "Effect": "Allow",
+          "Action": [
+            "ec2:TerminateInstances"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Sid": "WAFRemediation",
+          "Effect": "Allow",
+          "Action": [
+            "wafv2:UpdateIPSet"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+    ```
   </Step>
   <Step title="Connect in Hiro">
-    In Hiro, go to [**Settings > Integrations**](https://app.hiro.is/settings/integrations):
-    1. Enter the Role ARN
-    2. Enter the External ID (if configured)
+    In Hiro, go to [**Settings > Integrations > AWS**](https://app.hiro.is/settings/integrations/aws):
+    1. Enter the **Role ARN** (e.g., `arn:aws:iam::123456789012:role/HiroSecurityRole`)
+    2. Enter the **External ID** (must match what you configured in the trust policy)
     3. Click **Connect**
   </Step>
 </Steps>
@@ -149,16 +210,28 @@ To monitor multiple AWS accounts:
 
 ## Troubleshooting
 
-### "Access Denied" errors
+### "Access Denied" on AssumeRole
 
-- Verify the role ARN is correct
-- Check that Hiro's AWS account is in the trust policy
-- Verify the External ID matches (if configured)
-- Ensure required permissions are attached
+If you see errors like `User is not authorized to perform: sts:AssumeRole`:
+
+1. **Verify the trust policy** - Ensure Hiro's account (`605862532274`) is in the Principal
+2. **Check the External ID** - The External ID in Hiro must exactly match your trust policy condition
+3. **Confirm the Role ARN** - Double-check for typos in the role name or account ID
+
+### "Access Denied" on specific actions
+
+If AssumeRole succeeds but queries fail (e.g., `iam:GetRole` denied):
+
+- Your role is missing permissions. Attach `ReadOnlyAccess` for full read access
+- `ViewOnlyAccess` is **not sufficient** - it lacks IAM visibility
 
 ### Missing events
 
 CloudTrail events can take up to 15 minutes to appear. Recent activity may not show immediately.
+
+### Multi-account issues
+
+When monitoring multiple accounts, ensure the IAM role exists in **each** account with the same trust policy pointing to Hiro's account.
 
 ## Next Steps
 
